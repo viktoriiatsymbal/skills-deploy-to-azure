@@ -60,8 +60,9 @@ jobs:
       - name: Destroy Azure environment
         if: success()
         run: |
-          if az group exists --name ${{env.AZURE_RESOURCE_GROUP}}; then
-            az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}} --yes
+          RG_EXISTS=$(az group exists --name "${{ env.AZURE_RESOURCE_GROUP }}" 2>/dev/null || echo false)
+          if [ "$RG_EXISTS" = "true" ]; then
+            az group delete --name "${{ env.AZURE_RESOURCE_GROUP }}" --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}" --yes
           else
             echo "Resource group does not exist, nothing to delete."
           fi
